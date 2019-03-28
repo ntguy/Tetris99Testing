@@ -78,7 +78,11 @@ def CTHeight(currentTetromino):
         heightList.append(columnHeight)
     return heightList
 
+def CBHeight(currentBoard):
+    print("yeet")
+
 def main():
+    #must be global so that it can be changed within main
     global tetrominoQueue
     # assign the current tetromino to be the tetromino at the top of the queue
     currentTetromino = tetrominoQueue[0]
@@ -92,3 +96,20 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+#to-do
+#calculate heightList of currentBoard
+#for all column positions (top of board) of the tetromino, calculate the minimum distance between heightList of tetromino and board
+# 0 1
+# 1 1
+# 1 0
+# 0 0
+# 1 0
+# 1 1
+
+# 1 3 RESULT: 1 and 3, piece can be lowered 1
+#generate test board for each move possibility, with tetromino dropped
+#the hard part lol, evaluate which test board state is the best.
+#how many moves left or right is that state? Switch would then be given input such as left, left, left, drop. 
+
