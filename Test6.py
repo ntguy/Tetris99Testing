@@ -17,10 +17,10 @@ currentBoard = array([
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+    [1, 1, 0, 0, 1, 1, 1, 0, 0, 1],
+    [1, 1, 1, 1, 0, 1, 1, 0, 0, 1],
+    [1, 1, 0, 1, 1, 1, 1, 1, 0, 1]
 ])
 
 # 3D array (array of 2D array tetrominos, the upcoming tetrominos on the right of the game board)
@@ -78,8 +78,33 @@ def CTHeight(currentTetromino):
         heightList.append(columnHeight)
     return heightList
 
+#takes in the currentBoard and returns a heightmap (highest block for each column)
+#example: currentBoard is 
+#...
+#    [0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+#    [1, 1, 0, 0, 1, 1, 1, 0, 0, 1],
+#    [1, 1, 1, 1, 0, 1, 1, 0, 0, 1],
+#    [1, 1, 0, 1, 1, 1, 1, 1, 0, 1]
+
+#    [3, 3, 2, 2, 3, 4, 3, 1, 0, 4] will be the return value
 def CBHeight(currentBoard):
-    print("yeet")
+    # (height, width) of currentBoard 2D array
+    dimensions = currentBoard.shape
+    # will hold heightList, will be returned
+    heightList = []
+    # for each column of board
+    for i in range(0, dimensions[1]):
+        # columnHeight initialized to 0
+        columnHeight = 0
+        # iterate up through each row of current column, until the top (0)
+        for j in range(19, -1, -1):
+            # if the current space contains a block (is a 1, not a 0),
+            # columnHeight is set to 20 - j
+            if currentBoard[j][i] == 1:
+                columnHeight = 20 - j 
+        # append the columnHeight to the heightList
+        heightList.append(columnHeight)
+    return heightList
 
 def main():
     #must be global so that it can be changed within main
@@ -93,13 +118,14 @@ def main():
     # get heightList of tetromino
     CTHeightList = CTHeight(currentTetromino)
     print (CTHeightList)
+    CBHeightList = CBHeight(currentBoard)
+    print (CBHeightList)
 
 if __name__ == '__main__':
     main()
 
 
 #to-do
-#calculate heightList of currentBoard
 #for all column positions (top of board) of the tetromino, calculate the minimum distance between heightList of tetromino and board
 # 0 1
 # 1 1
