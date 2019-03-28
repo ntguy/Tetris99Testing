@@ -26,9 +26,8 @@ currentBoard = array([
 # 3D array (array of 2D array tetrominos, the upcoming tetrominos on the right of the game board)
 tetrominoQueue = array([
   [
-    [0, 1], 
     [1, 1], 
-    [1, 0]
+    [1, 1]
   ], 
   [
     [1, 1, 1, 1]
@@ -47,6 +46,10 @@ tetrominoQueue = array([
     [0, 1, 0]
   ]
 ])
+
+constBoardWidth = 10
+constBoardHeight = 20
+
 
 
 # takes in the current Tetromino and returns a height map (how far down does each column of the piece extend)
@@ -88,12 +91,10 @@ def CTHeight(currentTetromino):
 
 #    [3, 3, 2, 2, 3, 4, 3, 1, 0, 4] will be the return value
 def CBHeight(currentBoard):
-    # (height, width) of currentBoard 2D array
-    dimensions = currentBoard.shape
     # will hold heightList, will be returned
     heightList = []
     # for each column of board
-    for i in range(0, dimensions[1]):
+    for i in range(0, constBoardWidth):
         # columnHeight initialized to 0
         columnHeight = 0
         # iterate up through each row of current column, until the top (0)
@@ -105,6 +106,30 @@ def CBHeight(currentBoard):
         # append the columnHeight to the heightList
         heightList.append(columnHeight)
     return heightList
+
+#returns a list of how many spaces down the current tetromino can move before it makes contact with a piece on the board (collision). Indexed to go from leftmost to rightmost side. Since some tetrominos are wider than others, the list can have a variable length. First element will always represent the furthest left the tetromino can be, last element the furthest right. 
+#example return: [15, 15, 16, 15, 14, 14, 15, 17, 14]
+#takes in the currentTetromino and heightLists for it and the board
+def minHeightDiff(currentTetromino, CTHeightList, CBHeightList):
+    #list of minimum height differences, left to right, will be returned.
+    heightDiffList = [] 
+    #tetrominoDimensions[1] will be width of current tetromino
+    tetrominoDimensions = currentTetromino.shape
+    #start at left of board, go right until you hit the wall with the current tetromino, accounting for variable width
+    for i in range(0, 10 - (tetrominoDimensions[1] - 1)):
+        #height differences for each column of the tetromino
+        heightDiffs = []
+        #cycle through each column of the currentTetromino
+        for j in range(0, len(CTHeightList)):
+            #calculate the height difference between bottom of tetromino and highest piece of board FOR THIS COLUMN
+            heightDiff = 20 - (CTHeightList[j] + CBHeightList[i+j])
+            heightDiffs.append(heightDiff)
+        #the minHeightDiff is how far the tetromino can be moved down before contacting a board piece. Append to the final heightDiffList
+        minHeightDiff = min(heightDiffs)
+        heightDiffList.append(minHeightDiff)
+    return heightDiffList
+
+
 
 def main():
     #must be global so that it can be changed within main
@@ -120,22 +145,15 @@ def main():
     print (CTHeightList)
     CBHeightList = CBHeight(currentBoard)
     print (CBHeightList)
+    heightDiffList = minHeightDiff(currentTetromino, CTHeightList, CBHeightList)
+    print(heightDiffList)
 
 if __name__ == '__main__':
     main()
 
 
-#to-do
-#for all column positions (top of board) of the tetromino, calculate the minimum distance between heightList of tetromino and board
-# 0 1
-# 1 1
-# 1 0
-# 0 0
-# 1 0
-# 1 1
 
-# 1 3 RESULT: 1 and 3, piece can be lowered 1
+#to-do
 #generate test board for each move possibility, with tetromino dropped
 #the hard part lol, evaluate which test board state is the best.
 #how many moves left or right is that state? Switch would then be given input such as left, left, left, drop. 
-
