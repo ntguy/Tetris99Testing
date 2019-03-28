@@ -1,4 +1,5 @@
 from numpy import *
+from copy import copy, deepcopy
 
 currentBoard = array([
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -25,6 +26,11 @@ currentBoard = array([
 
 # 3D array (array of 2D array tetrominos, the upcoming tetrominos on the right of the game board)
 tetrominoQueue = array([
+  [
+    [0, 1], 
+    [1, 1], 
+    [1, 0]
+  ], 
   [
     [1, 1], 
     [1, 1]
@@ -129,6 +135,28 @@ def minHeightDiff(currentTetromino, CTHeightList, CBHeightList):
         heightDiffList.append(minHeightDiff)
     return heightDiffList
 
+#will return a 3D array (2D array of all possible boards/moves with the current Tetromino). 
+#assumes direct drops only
+def generatePossibleBoards(currentTetromino, currentBoard, heightDiffList):
+    #array will hold 2D array boards and be returned
+    possibleBoards = []
+    #height and width of currentTetromino
+    dimensions = currentTetromino.shape
+    #used to make the tetromino increment/travel rightwards, for each possible move
+    count = 0 
+    #for each minHeight (distance Tetromino must travel down before collision), create a possible board
+    for minHeight in heightDiffList:
+        #testBoard must be a COPY of the current board, not a reference to it
+        testBoard = deepcopy(currentBoard)
+        # for each column of tetromino
+        for i in range(0, dimensions[1]):
+            # iterate down through each row of current column
+            for j in range(0, dimensions[0]):
+                #adding the tetromino to the board. Coordinates use j and i, and BOARD coordinate is offset by minHeight (how far down to move piece) and count (how far right to move piece)
+                testBoard[j + minHeight][i+count] += (currentTetromino[j][i])
+        count += 1 #right one
+        possibleBoards.append(testBoard) #append to final returned possibleBoards list
+    return(possibleBoards)
 
 
 def main():
@@ -147,6 +175,8 @@ def main():
     print (CBHeightList)
     heightDiffList = minHeightDiff(currentTetromino, CTHeightList, CBHeightList)
     print(heightDiffList)
+    possibleBoards = generatePossibleBoards(currentTetromino, currentBoard, heightDiffList)
+    print(possibleBoards)
 
 if __name__ == '__main__':
     main()
