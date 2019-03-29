@@ -96,7 +96,7 @@ def CTHeight(currentTetromino):
 #    [1, 1, 0, 1, 1, 1, 1, 1, 0, 1]
 
 #    [3, 3, 2, 2, 3, 4, 3, 1, 0, 4] will be the return value
-def CBHeight(currentBoard):
+def boardHeight(currentBoard):
     # will hold heightList, will be returned
     heightList = []
     # for each column of board
@@ -159,6 +159,45 @@ def generatePossibleBoards(currentTetromino, currentBoard, heightDiffList):
     return(possibleBoards)
 
 
+
+
+
+#given a board state, computes number of complete lines
+def computeCompleteLines(board):
+    #number of complete lines initialized to 0
+    completeLines = 0
+    #for each row/line of the board, check if it is complete (all 1s)
+    for row in range (20):
+        #complete initialized to True, switched to False if 0 is in line
+        complete = True
+        #for each column in line
+        for column in range(10):
+            #if 0 is found, line isn't complete, break the loop
+            if (board[row][column]) == 0:
+                complete = False
+                break
+        #if the line is complete, increment completeLines
+        if (complete):
+            completeLines = completeLines + 1
+    return (completeLines)
+
+#this is gonna need sped up lmao.
+#computes the number of holes in the board
+def computeHoles(board):
+    return(2)
+
+#returns the heuristic value of a board, taking into account:
+#aggregate height, complete lines, holes, and bumpiness
+def computeHeuristicVal(board):
+    aggregateHeight = sum(boardHeight(board))
+    completeLines = computeCompleteLines(board)
+    holes = computeHoles(board)
+
+    heuristicVal = 5
+    return heuristicVal
+
+
+
 def main():
     #must be global so that it can be changed within main
     global tetrominoQueue
@@ -171,12 +210,14 @@ def main():
     # get heightList of tetromino
     CTHeightList = CTHeight(currentTetromino)
     print (CTHeightList)
-    CBHeightList = CBHeight(currentBoard)
+    CBHeightList = boardHeight(currentBoard)
     print (CBHeightList)
     heightDiffList = minHeightDiff(currentTetromino, CTHeightList, CBHeightList)
     print(heightDiffList)
     possibleBoards = generatePossibleBoards(currentTetromino, currentBoard, heightDiffList)
     print(possibleBoards)
+    heuristicVal = computeHeuristicVal(possibleBoards[0])
+    print(heuristicVal)
 
 if __name__ == '__main__':
     main()
@@ -184,6 +225,8 @@ if __name__ == '__main__':
 
 
 #to-do
-#generate test board for each move possibility, with tetromino dropped
 #the hard part lol, evaluate which test board state is the best.
+#rotation block data, in seperate file that is included
 #how many moves left or right is that state? Switch would then be given input such as left, left, left, drop. 
+#actually use next tetromino in queue in a looping manner
+#switch, when generating currentBoard, should ignore the currentTetromino (ignore pieces that aren't in contact with another piece?)
