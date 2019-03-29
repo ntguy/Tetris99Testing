@@ -276,8 +276,8 @@ def main():
     print("Heuristic Value List: ", heuristicValList)
     #the bestMove is the board with the maximum heuristic
     bestMove = max(heuristicValList)
-    #numpy.argmin gets the index of said maximum heuristic
-    bestMoveIndex = argmin(heuristicValList)
+    #numpy.argmax gets the index of said maximum heuristic
+    bestMoveIndex = argmax(heuristicValList)
     print("Best Move: ", bestMove, "Value, Index of", bestMoveIndex)
 
 if __name__ == '__main__':
