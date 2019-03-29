@@ -1,6 +1,11 @@
 from numpy import *
 from copy import copy, deepcopy
 
+#game data
+
+#currentBoard and tetrominoQueue will be the two variables that need to be refreshed after each move, getting data from the capture card. 
+#in order to account for delay in the capture card, we may need to run multiple moves in this program effectively blind 
+#play the currentTetromino, and the next couple in the queue, before refreshing the queue). Proper integration for fast play will take some time
 currentBoard = array([
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -44,19 +49,16 @@ tetrominoQueue = array([
     [1, 0]
   ], 
   [
-    [1, 1], 
-    [1, 1]
-  ],
-  [
     [1, 1, 1],
     [0, 1, 0]
   ]
 ])
 
-constBoardWidth = 10
-constBoardHeight = 20
 
 
+
+
+#Height analysis functions (for tetromino's, boards, and determining collisions)
 
 # takes in the current Tetromino and returns a height map (how far down does each column of the piece extend)
 # examples:
@@ -100,7 +102,7 @@ def boardHeight(currentBoard):
     # will hold heightList, will be returned
     heightList = []
     # for each column of board
-    for i in range(0, constBoardWidth):
+    for i in range(10):
         # columnHeight initialized to 0
         columnHeight = 0
         # iterate up through each row of current column, until the top (0)
@@ -113,7 +115,10 @@ def boardHeight(currentBoard):
         heightList.append(columnHeight)
     return heightList
 
-#returns a list of how many spaces down the current tetromino can move before it makes contact with a piece on the board (collision). Indexed to go from leftmost to rightmost side. Since some tetrominos are wider than others, the list can have a variable length. First element will always represent the furthest left the tetromino can be, last element the furthest right. 
+#returns a list of how many spaces down the current tetromino can move before it makes contact with a piece on the board (collision). 
+#Indexed to go from leftmost to rightmost side. Since some tetrominos are wider than others, the list can have a variable length:
+#up to 10 if the tetromino is width 1 (a height difference for each column), as small as 7 if teromino is width 4
+# First element will always represent the furthest left the tetromino can be, last element the furthest right. 
 #example return: [15, 15, 16, 15, 14, 14, 15, 17, 14]
 #takes in the currentTetromino and heightLists for it and the board
 def minHeightDiff(currentTetromino, CTHeightList, CBHeightList):
@@ -134,6 +139,12 @@ def minHeightDiff(currentTetromino, CTHeightList, CBHeightList):
         minHeightDiff = min(heightDiffs)
         heightDiffList.append(minHeightDiff)
     return heightDiffList
+
+
+
+
+
+#AI Stuff (Node/State Generation and Heuristic Analysis)
 
 #will return a 3D array (2D array of all possible boards/moves with the current Tetromino). 
 #assumes direct drops only
@@ -157,10 +168,6 @@ def generatePossibleBoards(currentTetromino, currentBoard, heightDiffList):
         count += 1 #right one
         possibleBoards.append(testBoard) #append to final returned possibleBoards list
     return(possibleBoards)
-
-
-
-
 
 #given a board state, computes number of complete lines
 def computeCompleteLines(board):
@@ -198,7 +205,6 @@ def computeHoles(board, boardHeightList):
                 holes = holes + 1 #increment hole counter
     return holes
 
-
 #returns the heuristic value of a board, taking into account:
 #aggregate height, complete lines, holes, and bumpiness
 def computeHeuristicVal(board):
@@ -209,6 +215,8 @@ def computeHeuristicVal(board):
 
     heuristicVal = 5
     return heuristicVal
+
+
 
 
 
@@ -223,18 +231,20 @@ def main():
     currentTetromino = array(currentTetromino)
     # get heightList of tetromino
     CTHeightList = CTHeight(currentTetromino)
-    print (CTHeightList)
+    print ("Current Tetromino Height List: ", CTHeightList)
     CBHeightList = boardHeight(currentBoard)
-    print (CBHeightList)
+    print ("Current Board     Height List: ", CBHeightList)
     heightDiffList = minHeightDiff(currentTetromino, CTHeightList, CBHeightList)
-    print(heightDiffList)
+    print("Height Difference        List: ", heightDiffList)
     possibleBoards = generatePossibleBoards(currentTetromino, currentBoard, heightDiffList)
-    print(possibleBoards)
+    #print(possibleBoards)
     heuristicVal = computeHeuristicVal(possibleBoards[0])
-    print(heuristicVal)
+    #print(heuristicVal)
 
 if __name__ == '__main__':
     main()
+
+
 
 
 
