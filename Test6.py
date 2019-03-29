@@ -205,15 +205,46 @@ def computeHoles(board, boardHeightList):
                 holes = holes + 1 #increment hole counter
     return holes
 
+#computes and returns the variation between adjacent column heights (bumpiness, wells, etc). 
+#a relatively flat grid is desirable as there is less risk to create holes
+def computeBumpiness(boardHeightList):
+    bumpinessTotal = 0
+    #only for i in range 9 becuase last column is reached via i+1
+    for i in range (9):
+        #variation between columnHeight and the next
+        variation = abs(boardHeightList[i] - boardHeightList[i+1])
+        #add variation to the bumpinessTotal
+        bumpinessTotal = bumpinessTotal + variation
+    return(bumpinessTotal)
+
 #returns the heuristic value of a board, taking into account:
 #aggregate height, complete lines, holes, and bumpiness
 def computeHeuristicVal(board):
     boardHeightList = boardHeight(board)
+
+    #4 heuristics
     aggregateHeight = sum(boardHeightList)
     completeLines = computeCompleteLines(board)
     holes = computeHoles(board, boardHeightList)
+    bumpiness = computeBumpiness(boardHeightList)
 
-    heuristicVal = 5
+    #parameters/values to multiply each heuristic by, since the scales and level of importance are not equal
+    ParamAggregateHeight = -0.5
+    ParamCompleteLines = 0.75   #positive because this should be maximized, not minimized!
+    ParamHoles = -0.33
+    ParamBumpiness = -0.2
+    
+    #puts heuristic together into value to evaluate (higher is better)
+    heuristicVal = ParamAggregateHeight * aggregateHeight + ParamCompleteLines * completeLines + ParamHoles * holes + ParamBumpiness * bumpiness
+
+    print("Test Board (NOT currentBoard; currentTetromino is placed)")
+    print(board)
+    print("Aggregate Height: ", aggregateHeight)
+    print("Complete Lines: ", completeLines)
+    print("Holes: ", holes)
+    print("Bumpiness: ", bumpiness)
+    print(heuristicVal)
+
     return heuristicVal
 
 
