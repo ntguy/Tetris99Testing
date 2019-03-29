@@ -181,17 +181,31 @@ def computeCompleteLines(board):
             completeLines = completeLines + 1
     return (completeLines)
 
-#this is gonna need sped up lmao.
-#computes the number of holes in the board
-def computeHoles(board):
-    return(2)
+#computes and returns the number of holes in the board (0s with 1s somewhere above them)
+def computeHoles(board, boardHeightList):
+    #we need the indexes of the height coordinates, e.g., not 0 for the bottom, but 19
+    heightIndexList = []
+    for i in range (size(boardHeightList)):
+        heightIndexList.append(20 - boardHeightList[i])
+
+    #number of holes initialized to 0
+    holes = 0
+    #for each column of the board
+    for column in range (10):
+        #check each row, from the index of the highest 1 in the column down to the bottom of the board. If a 0 is found, it by definition has a 1 above it and is a hole
+        for row in range(heightIndexList[column], 20):
+            if (board[row][column] == 0):
+                holes = holes + 1 #increment hole counter
+    return holes
+
 
 #returns the heuristic value of a board, taking into account:
 #aggregate height, complete lines, holes, and bumpiness
 def computeHeuristicVal(board):
-    aggregateHeight = sum(boardHeight(board))
+    boardHeightList = boardHeight(board)
+    aggregateHeight = sum(boardHeightList)
     completeLines = computeCompleteLines(board)
-    holes = computeHoles(board)
+    holes = computeHoles(board, boardHeightList)
 
     heuristicVal = 5
     return heuristicVal
@@ -225,6 +239,7 @@ if __name__ == '__main__':
 
 
 #to-do
+#organize functions
 #the hard part lol, evaluate which test board state is the best.
 #rotation block data, in seperate file that is included
 #how many moves left or right is that state? Switch would then be given input such as left, left, left, drop. 
