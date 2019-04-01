@@ -31,27 +31,33 @@ currentBoard = array([
 
 # 3D array (array of 2D array tetrominos, the upcoming tetrominos on the right of the game board)
 tetrominoQueue = array([
-  [
-    [0, 1], 
-    [1, 1], 
-    [1, 0]
-  ], 
-  [
-    [1, 1], 
-    [1, 1]
-  ], 
-  [
-    [1, 1, 1, 1]
-  ], 
-  [
-    [0, 1], 
-    [1, 1], 
-    [1, 0]
-  ], 
-  [
-    [1, 1, 1],
-    [0, 1, 0]
-  ]
+    [
+        [1, 1, 0], 
+        [0, 1, 1]
+    ], 
+    [
+        [0, 1, 1], 
+        [1, 1, 0]
+    ], 
+    [
+        [1, 1], 
+        [1, 1]
+    ], 
+    [
+        [1, 1, 1, 1]
+    ], 
+    [
+        [1, 0, 0],
+        [1, 1, 1]
+    ],
+    [
+        [0, 0, 1],
+        [1, 1, 1]
+    ],
+    [
+        [0, 1, 0],
+        [1, 1, 1]
+    ]
 ])
 
 
@@ -250,16 +256,11 @@ def computeHeuristicVal(board):
 
 
 
+#driver functions
 
-def main():
-    #must be global so that it can be changed within main
-    global tetrominoQueue
-    # assign the current tetromino to be the tetromino at the top of the queue
-    currentTetromino = tetrominoQueue[0]
-    # delete the first/top tetromino from the queue (the currentTetromino)
-    tetrominoQueue = delete(tetrominoQueue, 0)
-    # has to be of type numpy array, not list
-    currentTetromino = array(currentTetromino)
+#given a tetromino in a specific rotation state, computes all positions it can be placed on the board and calls to compute the heuristic values of each board state
+#returns a list of said heuristic values
+def computeMove(currentTetromino):
     # get heightList of tetromino
     CTHeightList = CTHeight(currentTetromino)
     print ("Current Tetromino Height List: ", CTHeightList)
@@ -273,12 +274,194 @@ def main():
     heuristicValList = []
     for board in range(len(possibleBoards)):
         heuristicValList.append(computeHeuristicVal(possibleBoards[board]))
-    print("Heuristic Value List: ", heuristicValList)
+    return heuristicValList
+
+    #print("Heuristic Value List: ", heuristicValList)
     #the bestMove is the board with the maximum heuristic
-    bestMove = max(heuristicValList)
+    #bestMove = max(heuristicValList)
     #numpy.argmax gets the index of said maximum heuristic
-    bestMoveIndex = argmax(heuristicValList)
-    print("Best Move: ", bestMove, "Value, Index of", bestMoveIndex)
+    #bestMoveIndex = argmax(heuristicValList)
+    #print("Best Move: ", bestMove, "Value, Index of", bestMoveIndex)
+
+#given a tetromino, returns a 3D array of the possible rotation states of that tetromino
+def generateRotatedList(tetromino):
+    if (array_equal(tetromino, [
+    [1, 1, 0], 
+    [0, 1, 1]])):
+        rotatedList = [
+    [
+        [1, 1, 0], 
+        [0, 1, 1]
+    ],
+    [
+        [0, 1], 
+        [1, 1], 
+        [1, 0]
+    ]]
+
+    elif (array_equal(tetromino, [
+    [0, 1, 1], 
+    [1, 1, 0]])):
+        rotatedList = [
+    [
+        [0, 1, 1], 
+        [1, 1, 0]
+    ],
+    [
+        [1, 0], 
+        [1, 1], 
+        [0, 1]
+    ]]
+
+    elif (array_equal(tetromino, [
+    [1, 1], 
+    [1, 1]])):
+        rotatedList = [
+    [
+        [1, 1], 
+        [1, 1]
+    ],
+    ]
+
+    elif (array_equal(tetromino, [
+    [1, 1, 1, 1] 
+    ])):
+        rotatedList = [
+    [
+        [1, 1, 1, 1] 
+    ],
+    [
+        [1], 
+        [1], 
+        [1],
+        [1]
+    ]]
+
+    elif (array_equal(tetromino, [
+    [1, 0, 0],
+    [1, 1, 1]])):
+        rotatedList = [
+    [
+        [1, 0, 0],
+        [1, 1, 1]
+    ],
+    [
+        [1, 1], 
+        [1, 0], 
+        [1, 0]
+    ],
+    [
+        [1, 1, 1],
+        [0, 0, 1]
+    ],
+    [
+        [0, 1], 
+        [0, 1], 
+        [1, 1]
+    ]
+    ]
+
+    elif (array_equal(tetromino, [
+    [0, 0, 1],
+    [1, 1, 1]])):
+        rotatedList = [
+    [
+        [0, 0, 1],
+        [1, 1, 1]
+    ],
+    [
+        [1, 0], 
+        [1, 0], 
+        [1, 1]
+    ],
+    [
+        [1, 1, 1],
+        [1, 0, 0]
+    ],
+    [
+        [1, 1], 
+        [0, 1], 
+        [0, 1]
+    ]
+    ]
+
+    elif (array_equal(tetromino, [
+    [0, 1, 0],
+    [1, 1, 1]])):
+        rotatedList = [
+    [
+        [0, 1, 0],
+        [1, 1, 1]
+    ],
+    [
+        [1, 0], 
+        [1, 1], 
+        [1, 0]
+    ],
+    [
+        [1, 1, 1],
+        [0, 1, 0]
+    ],
+    [
+        [0, 1], 
+        [1, 1], 
+        [0, 1]
+    ]
+    ]
+
+
+    return rotatedList
+
+def main():
+    #must be global so that it can be changed within main
+    global tetrominoQueue
+    
+    #for i in range(len(tetrominoQueue)):
+    # assign the current tetromino to be the tetromino at the top of the queue
+    #currently, can test different tetrominos by changing index
+    currentTetromino = tetrominoQueue[0]
+    # delete the first/top tetromino from the queue (the currentTetromino)
+    tetrominoQueue = delete(tetrominoQueue, 0)
+    # has to be of type numpy array, not list
+    currentTetromino = array(currentTetromino)
+    #get a 3D array back (array of the tetromino in all it's rotation states)
+
+    #all this rotation stuff should be its own function
+
+    rotatedList = generateRotatedList(currentTetromino)
+    #2D array, an array for each rotation state of the tetromino
+    heuristicVal2D = []
+    #for each rotation state, compute what the best move would be
+    for i in range(len(rotatedList)):
+        rotatedList[i] = array(rotatedList[i])
+        heuristicValList = computeMove(rotatedList[i])
+        heuristicVal2D.append(heuristicValList)
+    for i in range(len(heuristicVal2D)):
+        print ("Heuristic Value List, Rotations", i, ":",heuristicVal2D[i])
+
+    #will hold the max heuristic value of each rotation state
+    bestHeurList = []
+    #will hold the indexes of said maximum heurisitics
+    bestHeurIndexList = []
+    #for each of the lists in heurisitcVal2D (each rotation)
+    for i in range(len(heuristicVal2D)):
+        #the bestMove is the board with the maximum heuristic
+        bestHeurList.append(max(heuristicVal2D[i]))
+        #numpy.argmax gets the index of said maximum heuristic
+        bestHeurIndexList.append(argmax(heuristicVal2D[i]))
+
+    #The highest heurisitc value, accounting for rotations
+    bestHeurVal = max(bestHeurList)
+    #how many rotations are needed for the tetromino to be in the orientation it is in for the bestHeurValue
+    bestHeurValRotations = argmax(bestHeurList)
+    #index of the maximum heuristic value in the specific list for a rotation state of a tetromino. E.G., if 0, tetromino is placed as far left as possible
+    bestHeurValHorizantalIndex = argmax(heuristicVal2D[bestHeurValRotations])
+
+    print("Best Move Heuristic Value: ", bestHeurVal)
+    print("Rotations Needed:", bestHeurValRotations)
+    print("Horizantal Index:", bestHeurValHorizantalIndex)
+
+    #Need a function to compute how far left/right to move piece! This will be difficult since rotation determines the location of the tetromino on the board, and because tetrominos have various widths
 
 if __name__ == '__main__':
     main()
@@ -288,7 +471,9 @@ if __name__ == '__main__':
 
 
 #to-do
+#put rotation stuff into function
 #how many moves left or right is chosen best state? Switch would then be given input such as left, left, left, drop. 
-#rotation block data, in seperate file that is included
+#if all heuristic values of possible boards are X amount worse than currentBoard, then evaluate holding the current piece (only execute if this brings an improvement)
 #actually use next tetromino in queue in a looping manner
 #switch, when generating currentBoard, should ignore the currentTetromino (ignore pieces at top of board that aren't in contact with another piece below them?)
+#holes parameter should be more intense?...
