@@ -192,6 +192,97 @@ def generateRotatedList(tetromino):
     return rotatedList
 
 
+#returns the intitial horizontal index of a given tetromino post rotation (how far from left side). Will be either 3, 4, or 5.
+def getInitialHorizontalIndex(rotatedTetromino):
+
+    #if the initial horizontal index is 3
+    if (array_equal(rotatedTetromino,[
+    [1, 1, 1, 1]
+    ]) 
+    or (array_equal(rotatedTetromino,[
+    [1, 0, 0],
+    [1, 1, 1]]))
+    or (array_equal(rotatedTetromino,[
+    [0, 0, 1],
+    [1, 1, 1]]))
+    or (array_equal(rotatedTetromino,[
+    [0, 1, 1],
+    [1, 1, 0]]))
+    or (array_equal(rotatedTetromino,[
+    [0, 1, 0],
+    [1, 1, 1]]))
+    or (array_equal(rotatedTetromino,[
+    [1, 1, 0],
+    [0, 1, 1]]))
+    or (array_equal(rotatedTetromino,[
+    [1, 1, 1],
+    [0, 0, 1]]))
+    or (array_equal(rotatedTetromino,[
+    [1, 1, 1],
+    [1, 0, 0]]))
+    or (array_equal(rotatedTetromino,[
+    [1, 1, 1],
+    [0, 1, 0]]))
+    or (array_equal(rotatedTetromino,[
+    [0, 1],
+    [0, 1],
+    [1, 1]]))
+    or (array_equal(rotatedTetromino,[
+    [1, 1],
+    [0, 1],
+    [0, 1]]))
+    or (array_equal(rotatedTetromino,[
+    [0, 1],
+    [1, 1],
+    [0, 1]]))
+    
+    ):
+        return 3
+
+
+    #if the initial horizontal index is 4
+    elif (array_equal(rotatedTetromino,[
+    [1, 1],
+    [1, 1]
+    ])
+    or (array_equal(rotatedTetromino,[
+    [1, 1],
+    [1, 0],
+    [1, 0]]))
+    or (array_equal(rotatedTetromino,[
+    [1, 0],
+    [1, 0],
+    [1, 1]]))
+    or (array_equal(rotatedTetromino,[
+    [1, 0],
+    [1, 1],
+    [0, 1]]))
+    or (array_equal(rotatedTetromino,[
+    [1, 0],
+    [1, 1],
+    [1, 0]]))
+    or (array_equal(rotatedTetromino,[
+    [0, 1],
+    [1, 1],
+    [1, 0]]))
+  
+    ):
+        return 4
+
+
+    #if the initial horizontal index is 5
+    elif (array_equal(rotatedTetromino,[
+    [1],
+    [1],
+    [1],
+    [1]
+    ])
+        
+    ):
+        return 5
+
+
+
 
 #Height analysis functions (for tetromino's, boards, and determining collisions)
 
@@ -478,7 +569,7 @@ def generatePostMoveBoard(currentTetromino, bestHeurValRotations, bestHeurValHor
     testBoard = clearCompleteLines(testBoard)
 
     postMoveBoard = testBoard
-    return(postMoveBoard)
+    return(postMoveBoard, rotatedTetromino)
 
 
 def clearCompleteLines(testBoard):
@@ -527,9 +618,22 @@ def main():
 
         #will be the resulting board (2D array) after best move is executed
         postMoveBoard = generatePostMoveBoard(currentTetromino, tupleHeurData[1], tupleHeurData[2])
-        currentBoard = postMoveBoard
+        currentBoard = postMoveBoard[0] #update currentboard
+        rotatedTetromino = postMoveBoard[1] #get rotated tetromino
 
-    #Need a function to compute how far left/right to move piece! This will be difficult since rotation determines the location of the tetromino on the board, and because tetrominos have various widths. If we want to save time, consider just moving the tetromino left 5 times (to align with left edge) then move right bestHeurValHorizontalIndex number of times
+        #now, we have to send inputs to the switch
+        #due to the rotation system of tetris, rotating a piece will change the horizontal position of its leftmost component (it will get further away from the left). Indexes are based on the left, so getInitialHorizontalIndex returns the initial horizontal index of a tetromino after it has been rotated properly
+        initialHorizontalIndex = getInitialHorizontalIndex(rotatedTetromino)
+
+        #now, to calculate moves, we need to find the difference between the index of the best move and the tetromino's initial index. This value represents number of moves right to send to the switch. If 0, none. If negative, that number of lefts.
+        horizontalMoves =  tupleHeurData[2] - initialHorizontalIndex
+        print("Horizontal Moves:", horizontalMoves)
+
+        #inputs to send to the switch: rotate tupleHeurData[1] number of times, move left/right based on horizontal moves, then hard drop
+
+        
+
+    #If that is too slow (too many inputs for switch), we could have a function that, given a rotated tetromino, returns which horizontal index it is in after entering the board and rotating. The result will be 3, 4, or 5. Then, we have the horizontal index of the best move, so the difference is found to compute the inputs necessary. 
 
 if __name__ == '__main__':
     main()
@@ -538,7 +642,6 @@ if __name__ == '__main__':
 
 
 #to-do
-#how many moves left or right is chosen best state? Switch would then be given input such as left, left, left, drop. 
 #switch, when generating currentBoard, should ignore the currentTetromino (ignore pieces at top of board that aren't in contact with another piece below them?). Could be done here or in C code
 
 #optional
