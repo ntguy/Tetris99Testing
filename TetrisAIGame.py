@@ -472,6 +472,11 @@ def computeHeuristicVal(board):
     #puts heuristic together into value to evaluate (higher is better)
     heuristicVal = ParamAggregateHeight * aggregateHeight + ParamCompleteLines * completeLines + ParamHoles * holes + ParamBumpiness * bumpiness
 
+    #overlap between peices indicates the game is over. BAD
+    noOverlap = checkIfOverlap(board)
+    if(noOverlap == False):
+        heuristicVal = heuristicVal - 1000
+
     #print("A Test Board (NOT currentBoard; currentTetromino is placed)")
     #print(board)
     #print("Aggregate Height: ", aggregateHeight)
@@ -597,15 +602,25 @@ def clearCompleteLines(testBoard):
 
     return testBoard
 
+#checks if the board has overlap (multiple pieces in one place), which obiously isn't allowed
+def checkIfOverlap(board):
+    noOverlap = (board<2).all()
+    return noOverlap
+
+
 def main():
     #must be global so that it can be changed within main
     global tetrominoQueue
     global currentBoard
     global linesCleared
     
-    for i in range(500):
+    for i in range(3000):
         print("Current Board")
         print(currentBoard)
+        noOverlap = checkIfOverlap(currentBoard)
+        if(noOverlap == False): #end looping if overlap is found
+            print("Game Over")
+            break
         tetrominoIndex = randint(0, 6)
         # assign the current tetromino to be the tetromino at the top of the queue
         #currently, can test different tetrominos by changing index
